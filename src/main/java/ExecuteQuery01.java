@@ -1,61 +1,54 @@
 import java.sql.*;
 
 public class ExecuteQuery01 {
-    public static void main(String[] args) throws SQLException {
 
-        Connection connection = DriverManager.getConnection
-                ("jdbc:postgresql://localhost:5432/postgres", "postgres", "491646Me.");
+    public static void main(String[] args) throws SQLException {
+        Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "1234");
         Statement statement = connection.createStatement();
 
-        //1. Örnek:  region id'si 1 olan satir değerlerini çağırın.
-        System.out.println("\n=================Ornek1=======================\n");
+        //1. Örnek:  region id'si 1 olan satır değerlerini çağırın.
+        System.out.println("===Örnek 1===\n");
         String sql1 = "select * from countries where region_id = 1";
         boolean r1 = statement.execute(sql1);
-        System.out.println("r1 = " + r1);//true doner cunku select komutu ile data cagirdik
+        System.out.println("r1 = " + r1);//true döner çünkü select komutu ile data çağrıldı
 
-        //Not: SQL Query ile cagrilan data'yi gorebilmek icin executeQuery() methodu kullanmaliyiz
-        //executeQuery() methodu cagrilan datayi Resultset datasi olarak doner
-        //Default olarak Resultset bir pointer ile doner ve bu pointer sutun isimlerini gosterir.
-        //Data'yi okuyabilmek icin next() methodu ile pointer'i siradaki satira tasimaliyiz
-        //next() methodu sirada satir varsa true yoksa false doner
+        //SQL query ile çağrılan datayı görebilmek için execute() methodu yerine executeQuery() methodunu kullanmalıyız.
+        /*
+        executeQuery() methodu çağrılan datayı ResultSet olarak dönüyor.
+        Default olarak sütun isimlerini gösteren bir pointer bulunuyor.
+        Dataya ulaşabilmek için bu pointer'ı next() methodu ile ilgili satıra taşımamız gerekiyor.
+        next() methodu sırada satır var ise 'true' döner ve pointer'ı sıradaki satıra taşır.
+         */
 
-        //1.YOL
-        //ResultSet resultSet = statement.executeQuery(sql1);
-        //resultSet.next();
-        //resultSet.next();
-        //resultSet.next();
-        //System.out.println(resultSet.getString("country_name"));
+        ResultSet resultSet1 = statement.executeQuery(sql1);
 
-        //2.YOL
-        ResultSet resultSet = statement.executeQuery(sql1);
-        while (resultSet.next()) {
-            System.out.println("country_id: " + resultSet.getString("country_id") +
-                    "country_name: " + resultSet.getString("country_name") +
-                    "region_id: " + resultSet.getString("region_id"));
+        while (resultSet1.next()) {
+
+            System.out.println(resultSet1.getString("country_id") + " -- " + resultSet1.getString("country_name") + " -- " + resultSet1.getInt("region_id"));
+
         }
 
-        //2.Ornek: "region_id"nin 2'den büyük olduğu "country_id" ve "country_name" değerlerini çağırın.
-
-        System.out.println("\n=================Ornek2=======================\n");
-
-        String sql2 = "select country_id, country_name from countries where region_id >2";
+        //2.Örnek: "region_id"si 2'den büyük olan "country_id" ve "country_name" değerlerini çağırın.
+        System.out.println("\n===Örnek 2===\n");
+        String sql2 = "select * from countries where region_id > 2";
         ResultSet resultSet2 = statement.executeQuery(sql2);
 
         while (resultSet2.next()) {
-            System.out.println(resultSet2.getString(1) + "  ||  " + resultSet2.getString(2));
+
+            System.out.println(resultSet2.getString("country_id") + " -- " + resultSet2.getString("country_name"));
 
         }
 
-        // 3.Ornek : "number_of_employees" degeri en dusuk olan satirin tum degerlerini cagirin
-
-        System.out.println("\n=================Ornek3=======================\n");
-
+        //3.Örnek: "number_of_employees" değeri en düşük olan satırın tüm değerlerini çağırın.
+        System.out.println("\n===Örnek 3===\n");
         String sql3 = "select * from companies where number_of_employees = (select min(number_of_employees) from companies)";
         ResultSet resultSet3 = statement.executeQuery(sql3);
-        resultSet3.next();
 
-        System.out.println(resultSet3.getString(1) + " || " + resultSet3.getString(2) +
-                " || " + resultSet3.getString(3));
+        while (resultSet3.next()) {
+
+            System.out.println(resultSet3.getInt("company_id") + " -- " + resultSet3.getString("company") + " -- " + resultSet3.getString("number_of_employees"));
+
+        }
         connection.close();
         statement.close();
     }

@@ -1,19 +1,16 @@
 public class Test01 {
-
     public static void main(String[] args) {
-        //Test beklenen data ve asıl datanın karşılaştırılmasıdır
+        //Test, beklenen ve asıl datanın karşılaştırılmasıdır.
 
         String expectedData = "Hello";
-
         String actualData = "Hello";
 
-        if(expectedData.equals(actualData)){
+        if(actualData.equals(expectedData)){
             System.out.println("Test PASSED");
         }else {
             System.out.println("Test FAILED");
         }
 
-        //Otomasyon testi yapabilmek için bir "Test Framework"üne ihtiyacımız var.(JUnit, Test NG, Cucumber ...)
-
+        //Otomasyon testi yapabilmek için "Test Framework" kullanmamız gerekir(JUnit, TestNG, Cucumber)
     }
 }

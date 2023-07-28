@@ -25,19 +25,21 @@ public class MedunnaTest {
 
     @Test
     public void medunnaTest() throws SQLException {
-        //User connects to the database
 
-        //User sends the query to get the created room
-        String sql ="select * from room where room_number = 32654654";
+    //User connects to the database
+
+
+    //User sends the query to get the created room
+        String sql = "select * from room where room_number = 32655790";
         ResultSet resultSet = JDBCUtils.executeQuery(sql);
-
-        //Assert that room is created properly
         resultSet.next();
         String description = resultSet.getString("description");
         System.out.println("description = " + description);
-        assertEquals("Database Test İçin Oluşturuldu", description);
 
-        //Close connection
+    //Assert that room is created properly
+        assertEquals("171 NT Database Test İçin Oluşturuldu", description);
+
+    //User closes the connection
         JDBCUtils.closeConnection();
 
     }

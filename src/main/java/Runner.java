@@ -1,7 +1,5 @@
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,25 +7,28 @@ public class Runner {
 
     public static void main(String[] args) throws SQLException {
 
+
         //JDBCUtils.connectToDatabase();
         //JDBCUtils.createStatement();
 
-        //Execute methodunu çalıştır
-        JDBCUtils.execute("select * from companies");
+        //Execute methodu çalıştır
+        JDBCUtils.execute("select * from companies");//execute() methodu query'yi çalıştırır amd datayı dönmez. Data dönüyorsa true dönmüyorsa false döner
 
-        //campanies table'ının tüm sütunlarını yazdır
-        ResultSet resultSet = JDBCUtils.executeQuery("select * from companies");
+        //Companies table'ının tüm sütunlarını yazdır
+        ResultSet resultSet = JDBCUtils.executeQuery("select * from companies");//executeQuery() methodu query'yi çalıştırır ve dönen datayı bir ResultSet içine koyar.
 
-        List<String> list = new ArrayList<>();
-        while (resultSet.next()){
-            System.out.println(resultSet.getString("company"));
+        while (resultSet.next()) {
+            System.out.println(resultSet.getObject("company"));
         }
 
-        //company sütunun değerlerini bir list içerisine al
-        List<Object> companyList = JDBCUtils.getColumnList("companies","company");
-        System.out.println("companyList = " + companyList);
+        //companies table'ının company adlı sütunun değerlerini list olarak yazdır
+        List<Object> list = JDBCUtils.getColumnList("companies", "company");
+        System.out.println("list = " + list);
 
-        //Bağlantıyı kapat
+        //companies table'ının tamamını yazdırınız
+        System.out.println(JDBCUtils.getQueryResultMap("select * from companies"));
+
         JDBCUtils.closeConnection();
+
     }
 }

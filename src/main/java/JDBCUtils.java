@@ -1,37 +1,42 @@
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
 public class JDBCUtils {
 
-    private static Connection connection;
+    private static Connection connection;//Connection variable'ın başka methodlarda da kullanılabilmesi için 'class level'da belirtiliyor.
     private static Statement statement;
+    private static ResultSet resultSet;
 
 
-    //Bu method database ile bağlantı kurup Connection data döner
-//    public static Connection connectToDatabase() {
-//
-//        try {
-//            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "1234");
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
-//        return connection;
-//    }
-
+    //Bu method database'e bağlanıp bir Connection data return edecek
     public static Connection connectToDatabase() {
 
         try {
-            connection = DriverManager.getConnection("jdbc:postgresql://medunna.com:5432/medunna_db_v2", "select_user", "Medunna_pass_@6");
+            connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "1234");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
         return connection;
     }
 
 
-    //Bu method connectToDatabase() methodunu içinde çağırarak bir statement objesi oluşturup return yapar
+    //Medunna'ya bağlanan method
+//    public static Connection connectToDatabase() {
+//
+//        try {
+//            connection = DriverManager.getConnection("jdbc:postgresql://medunna.com:5432/medunna_db_v2", "select_user", "Medunna_pass_@6");
+//        } catch (SQLException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//        return connection;
+//    }
+
+    //Bu method connectToDatabase() methodu çağırarak statement dönüyor
     public static Statement createStatement() {
 
         try {
@@ -39,11 +44,12 @@ public class JDBCUtils {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
         return statement;
+
     }
 
-
-    //Bu method bir SQL query'yi çalıştırıp data dönüyorsa true, dönmüyorsa false verir
+    //Bu method String bir SQL query'yi createStatement() methodu çağırarak çalıştırıp boolean dönüyor
     public static boolean execute(String sql) {
 
         try {
@@ -54,37 +60,34 @@ public class JDBCUtils {
 
     }
 
-    //Ödev: executeUpdate methodu için bir reusable method oluşturunuz
-
-
-    //Bu method bir SQL query'yi çalıştırıp sonucu ResultSet olarak döner
-    public static ResultSet executeQuery(String sql) {
+    //Bu method String bir SQL query'yi createStatement() methodu çağırarak çalıştırıp ResultSet dönüyor
+    public static ResultSet executeQuery(String sql){
 
         try {
-            return createStatement().executeQuery(sql);
+            resultSet = createStatement().executeQuery(sql);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
+        return resultSet;
     }
 
-    //Bu method istediğimiz bir table'ın isteğimiz bir sütunu list olarak döner
-    public static List<Object> getColumnList(String tableName, String columnName) throws SQLException {
+    //Bu method paramterede belirtilen table ve column ismine göre bir query çalıştırıp ilgili sütun objelerini bir list olarak dönüyor
+    public static List<Object> getColumnList(String table, String column) throws SQLException {
 
         List<Object> list = new ArrayList<>();
+        String query = "select " + column + " from " + table;
 
-        ResultSet resultSet = executeQuery("select " + columnName + " from " + tableName);
-
+        ResultSet resultSet = executeQuery(query);
         while (resultSet.next()) {
-            list.add(resultSet.getObject(columnName));
+            list.add(resultSet.getObject(column));
         }
 
         return list;
-
     }
 
     //Bu method bağlantıyı kapatır
-    public static void closeConnection() {
+    public static void closeConnection(){
 
         try {
             connection.close();
@@ -95,4 +98,23 @@ public class JDBCUtils {
 
     }
 
+    public static List<Map<String, Object>> getQueryResultMap(String query) throws SQLException {
+        resultSet = createStatement().executeQuery(query);
+        List<Map<String, Object>> rowList = new ArrayList<>();
+        ResultSetMetaData rsmd;
+        try {
+            rsmd = resultSet.getMetaData();
+            while (resultSet.next()) {
+                Map<String, Object> colNameValueMap = new HashMap<>();
+                for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+                    colNameValueMap.put(rsmd.getColumnName(i), resultSet.getObject(i));
+                }
+                rowList.add(colNameValueMap);
+            }
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+        return rowList;
+    }
 }

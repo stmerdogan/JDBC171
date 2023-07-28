@@ -5,44 +5,38 @@ import java.sql.Statement;
 
 public class Execute01 {
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
-
-        //1. Adım: Driver'a kaydol ==> JDBC 4 sonrasi gerekli değil
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+        //1. Adım: Driver'ı kaydet ==> JDBC 4 sonrası yapılmıyor
         //Class.forName("org.postgresql.Driver");
 
         //2. Adım: Database'e bağlan
-        Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "491646Me.");
+        Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "1234");
 
         //3. Adım: Statement oluştur
         Statement statement = connection.createStatement();
 
-        //4.Adim :Query calistir
+        //4. Adım: Query çalıştır
 
-        //1.Ornek :Workers adinda bir table olusturunuz
-
+        //1. Örnek: workers adında bir table oluşturunuz
         boolean sql1 = statement.execute("CREATE TABLE workers (worker_id VARCHAR(20), worker_name VARCHAR(20), worker_salary INT)");
-        //execute() methodu parantez icerisinde belirtilen String sql komutunu database'de uygular
-        System.out.println("sql1 = " + sql1);//false doner cunku bir data cagrilmadi
+        System.out.println("sql1 = " + sql1);//false döner çünkü "create" komutu kullanıldı ve bir data çağrılmadı.
 
         /*
-        execute () methodu DDL Data definition ile kullanilir (create-drop-alter-truncate) ile kullanildiginda
-        data donmeyecegi icin her zaman 'false' doner
-
-        execute() methodu DQL (select) ile kullanildiginda data cagirirsa 'true' cagirmazsa 'false' doner
+        execute() methodu DDL (create, drop, alter, truncate) ile kullanıldığında bir data return etmediği için her zaman 'false' döner
+        execute() methodu DQL (select) ile kullanıldığında bir data return ettiğinde 'true' data return etmediğinde 'false' döner
          */
 
-        //2.Ornek: Workers table'ina worker_adress adinda bir sutun ekleyiniz
+        //2. Örnek: workers table'ına worker_address adında bir sütun ekleyiniz
+        String query = "ALTER TABLE workers ADD worker_address VARCHAR(120)";
+        boolean sql2 = statement.execute(query);
+        System.out.println("sql2 = " + sql2);//false döner çünkü "ALTER" komutu kullanıldı ve bir data çağrılmadı.
 
-        boolean sql2 = statement.execute("alter table workers add worker_adress varchar(100)");
-        System.out.println("sql2 = " + sql2);//false doner cunku bir data cagrilmadi
-
-        //3.Ornek :Workers table siliniz
-        boolean sql3 = statement.execute("drop table workers");
+        //3. Örnek: workers table'ını siliniz
+        boolean sql3 = statement.execute("DROP TABLE workers");
         System.out.println("sql3 = " + sql3);
 
-        //5.Adim :Baglantiyi kapat
+        //5. Adım: Bağlantıyı kapat
         connection.close();
         statement.close();
     }
 }
-
